@@ -170,6 +170,19 @@ install(
     PATTERN "internal" EXCLUDE
 )
 
+if(${PYLON_DOWNLOADED})
+    # Install Pylon SDK libraries
+    foreach (LIBDIR ${LIBDIRS_OUT})
+        install(
+            DIRECTORY
+             ${LIBDIR}/
+            DESTINATION
+             ${CATKIN_PACKAGE_LIB_DESTINATION}
+            FILES_MATCHING PATTERN "*.so"
+        )
+    endforeach()
+endif()
+
 if(CATKIN_BUILD_BINARY_PACKAGE)
     install(
         DIRECTORY

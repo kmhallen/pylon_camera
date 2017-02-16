@@ -1,6 +1,41 @@
-set(PYLON_ROOT $ENV{PYLON_ROOT})
-if (NOT "${PYLON_ROOT}")
+if (NOT IS_DIRECTORY "${PYLON_ROOT}")
+    set(PYLON_ROOT $ENV{PYLON_ROOT})
+endif()
+if (NOT IS_DIRECTORY "${PYLON_ROOT}")
     set(PYLON_ROOT "/opt/pylon5")
+endif()
+if (NOT IS_DIRECTORY "${PYLON_ROOT}")
+    include(cmake/TargetArch.cmake)
+    target_architecture(PYLON_ARCH)
+    set(PYLON_VER "5.0.1.6388")
+    set(PYLON_PACKAGE "pylon-${PYLON_VER}-${PYLON_ARCH}")
+    set(PYLON_URL "http://s.baslerweb.com/media/documents/${PYLON_PACKAGE}.tar.gz")
+    if(PYLON_ARCH STREQUAL "x86_64")
+      set(PYLON_MD5 "706615f31768ddde2125b27361b76770")
+    elseif(PYLON_ARCH STREQUAL "x86")
+      set(PYLON_MD5 "0abb0ad5e2c4b36a7c83e8c6e0958620")
+    endif()
+    message("-- Downloading Pylon SDK for ${PYLON_ARCH}: ${PYLON_URL} (~15MB)")
+    message("-- Local Pylon SDK: ${CMAKE_CURRENT_BINARY_DIR}/${PYLON_PACKAGE}/pylon5")
+    file(DOWNLOAD
+      ${PYLON_URL}
+      ${CMAKE_CURRENT_BINARY_DIR}/${PYLON_PACKAGE}.tar.gz
+      SHOW_PROGRESS
+      INACTIVITY_TIMEOUT 60
+      EXPECTED_MD5 ${PYLON_MD5}
+      TLS_VERIFY on)
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_CURRENT_BINARY_DIR}/${PYLON_PACKAGE}.tar.gz
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_CURRENT_BINARY_DIR}/${PYLON_PACKAGE}/pylonSDK-${PYLON_VER}-${PYLON_ARCH}.tar.gz
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PYLON_PACKAGE}
+    )
+    set(PYLON_ROOT "${CMAKE_CURRENT_BINARY_DIR}/${PYLON_PACKAGE}/pylon5")
+    set(PYLON_DOWNLOADED TRUE)
+else()
+    set(PYLON_DOWNLOADED FALSE)
 endif()
 
 set(_PYLON_CONFIG "${PYLON_ROOT}/bin/pylon-config")
