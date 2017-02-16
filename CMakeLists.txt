@@ -170,6 +170,22 @@ install(
     PATTERN "internal" EXCLUDE
 )
 
+if(CATKIN_BUILD_BINARY_PACKAGE)
+    install(
+        DIRECTORY
+         udev/
+        DESTINATION
+         /etc/udev/rules.d/
+    )
+else()
+    install(
+        DIRECTORY
+         udev
+        DESTINATION
+         ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    )
+endif()
+
 ## Testing ##
 # All Jenkins-Tests are now in the pylon_camera_tests-pkg
 ############

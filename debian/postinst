@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# A rules file was added during install, load and trigger rules
+sudo udevadm control --reload-rules && sudo service udev restart && sudo udevadm trigger
+
